@@ -7,9 +7,6 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 @Module({
   imports: [
-    JwtModule.register({
-      global: true,
-    }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
