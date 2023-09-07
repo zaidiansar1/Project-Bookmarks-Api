@@ -1,20 +1,31 @@
-import { Body, Controller, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
 import { BookmarkDTO } from "./dto";
 import { BookmarkService } from "./bookmark.service";
-import { AuthGuard } from "@nestjs/passport";
+import { AuthGuards } from "src/auth/guards";
 
-@Controller('bookmark')
+@Controller('bookmarks')
 export class BookmarkController {
     constructor(private bookmarkService: BookmarkService) {}
-    //Create a bookmark
-    @UseGuards(AuthGuard('jwt'))
+    
+    @UseGuards(AuthGuards)
     @Post('create')
     createBookmark(@Body() dto: BookmarkDTO, @Req() req) {
         dto.userId = req.user.id;
         return this.bookmarkService.createBookmark(dto);
     }
 
-    //Delete a bookmark
-    //Update a bookmark
+    @UseGuards(AuthGuards)
+    @Delete('delete/:id')
+    deleteBookmark(@Param('id') id: string) {
+        return this.bookmarkService.deleteBookmark(parseInt(id));
+    }
+
     //Read the bookmarks
+    @UseGuards(AuthGuards)
+    @Get('/getAll')
+    getBookmarks(@Req() req) {
+        return this.bookmarkService.getBookmarks(req.user.id);
+    }
+
+    //Update a bookmark
 }
