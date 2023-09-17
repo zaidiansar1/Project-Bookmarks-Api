@@ -20,12 +20,11 @@ export class BookmarkController {
         return this.bookmarkService.deleteBookmark(parseInt(id));
     }
 
-    //Read the bookmarks
     @UseGuards(AuthGuards)
     @Get('/getAll')
     getBookmarks(@Req() req) {
         return this.bookmarkService.getBookmarks(req.user.id);
     }
 
-    //Update a bookmark
+    //TODO: Update a bookmark
 }
