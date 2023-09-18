@@ -1,7 +1,7 @@
 import { Body, Controller, Post, Req, UseGuards } from "@nestjs/common";
 import { AuthService } from './auth.service';
 import { AuthDTO } from "./dto";
-import { RTGuard } from "./guards";
+import { AuthGuards, RTGuard } from "./guards";
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService) {}
@@ -20,5 +20,11 @@ export class AuthController {
     @Post('refresh')
     refreshTokens(@Req() req) {
         return this.authService.refreshTokens(req.user.sub, req.user.rt);
+    }
+
+    @UseGuards(AuthGuards)
+    @Post('signOut')
+    signOut(@Req() req) {
+        return this.authService.signOut(req.user.id);
     }
 }

@@ -116,4 +116,24 @@ export class AuthService {
             throw error;
         }
     }
+
+    async signOut(userId: number) {
+        try {
+            await this.repositoryService.user.updateMany({
+                where: {
+                    id: userId,
+                    refreshToken: {
+                        not: null
+                    }
+                },
+                data: {
+                    refreshToken: null
+                }
+            });
+            
+            return true;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
