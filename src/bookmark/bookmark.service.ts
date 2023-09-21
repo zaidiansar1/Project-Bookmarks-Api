@@ -27,24 +27,32 @@ export class BookmarkService {
         }
     }
 
-    async deleteBookmark(id: number): Promise<string> {
-        const bookmark = await this.prisma.bookmark.findUnique({
-            where: {
-                id,
-            }
-        });
+    async deleteBookmark(id: number, userId: number) {
+        try {
+            const bookmark = await this.prisma.bookmark.findMany({
+                where: {
+                    id,
+                    AND: {
+                        userId: userId,
+                    }
+                }
+            });
 
-        if (!bookmark) {
-            throw new NotFoundException('Bookmark not found');
+            if (bookmark.length === 0) return false;
+
+            await this.prisma.bookmark.deleteMany({
+                where: {
+                    id,
+                    AND: {
+                        userId: userId,
+                    }
+                }
+            });
+    
+            return true;
+        } catch (error) {
+            throw error;
         }
-
-        await this.prisma.bookmark.delete({
-            where: {
-                id,
-            }
-        });
-
-        return `Successfully deleted the bookmark ${id}`;
     }
 
     async getBookmarks(userId: number) {
@@ -58,6 +66,38 @@ export class BookmarkService {
             return bookmarks;
         } catch (error) {
             throw new NotFoundException("No Bookmarks found");
+        }
+    }
+
+    async updateBookmark(bookmarkId: number, dto: BookmarkDTO) {
+        try {
+            const bookmark = await this.prisma.bookmark.findMany({
+                where: {
+                    id: bookmarkId,
+                    AND: {
+                        userId: dto.userId,
+                    }
+                }
+            });
+
+            if (bookmark.length === 0) return false;
+            
+            await this.prisma.bookmark.updateMany({
+                where: {
+                    id: bookmarkId,
+                    AND: {
+                        userId: dto.userId,
+                    }
+                },
+                data: {
+                    title: dto.title,
+                    link: dto.link,
+                }
+            });
+            
+            return true;
+        } catch (error) {
+            throw error;
         }
     }
 }

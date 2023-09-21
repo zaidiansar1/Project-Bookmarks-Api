@@ -16,8 +16,8 @@ export class BookmarkController {
 
     @UseGuards(AuthGuards)
     @Delete('delete/:id')
-    deleteBookmark(@Param('id') id: string) {
-        return this.bookmarkService.deleteBookmark(parseInt(id));
+    deleteBookmark(@Param('id') id: string, @Req() req) {
+        return this.bookmarkService.deleteBookmark(parseInt(id), req.user.id);
     }
 
     @UseGuards(AuthGuards)
@@ -26,5 +26,14 @@ export class BookmarkController {
         return this.bookmarkService.getBookmarks(req.user.id);
     }
 
-    //TODO: Update a bookmark
+    @UseGuards(AuthGuards)
+    @Post('update/:id')
+    updateBookmark(
+        @Param('id') id: string, 
+        @Body() dto: BookmarkDTO, 
+        @Req() req
+    ) {
+        dto.userId = req.user.id;
+        return this.bookmarkService.updateBookmark(parseInt(id), dto);
+    }
 }
