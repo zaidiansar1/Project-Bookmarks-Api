@@ -50,7 +50,7 @@ export class AuthService {
         if (!user)
             throw new ForbiddenException('Email is incorrect');
         //else verify the password
-        const checkPwd = argon.verify(user.hash, dto.password);
+        const checkPwd = await argon.verify(user.hash, dto.password);
         //if password incorrect throw exception
         if (!checkPwd)
             throw new ForbiddenException('Password is incorrect');
@@ -103,9 +103,9 @@ export class AuthService {
                 }
             });
     
-            if (!user && !user.refreshToken) throw new ForbiddenException('Invalid User');
+            if (!user || !user.refreshToken) throw new ForbiddenException('Invalid User');
     
-            const checkRTHash = argon.verify(refreshToken, user.refreshToken);
+            const checkRTHash = await argon.verify(refreshToken, user.refreshToken);
     
             if (!checkRTHash) throw new ForbiddenException('Invalid Token');
     
